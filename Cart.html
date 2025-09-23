@@ -6,7 +6,7 @@
 
     <link rel="icon" href="Images/Cart Icon.jpg">
 
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="Cart.css">
 
 </head>
 
@@ -74,7 +74,7 @@
 
             </a>
 
-            <div id="nav-cart-count">3</div>
+            <div id="cart-count"></div>
 
         </div>
 
@@ -88,81 +88,19 @@
 
         <div class="main-box">
 
-            <div class="left-box">
+            <div id="products-list"></div>
 
-                <div class="cart-product">
+            <div id="payment-box">
 
-                    <div class="cart-product-image">
-
-                        <img src="Images/Men-Dress-1 (1).jpg" alt="Image Not Available" />
-
-                    </div>
-
-                    <div class="cart-product-data">
-
-                        <p>Product Name: ABC</p>
-
-                        <p>Price: 50 USD</p>
-
-                        <p>Quantity: 1</p>
-
-                    </div>
-
-                </div>
-
-                <div class="cart-product">
-
-                    <div class="cart-product-image">
-
-                        <img src="Images/Women-Dress-1 (1).jpg" alt="Image Not Available" />
-
-                    </div>
-
-                    <div class="cart-product-data">
-
-                        <p>Product Name: ABC</p>
-
-                        <p>Price: 50 USD</p>
-
-                        <p>Quantity: 1</p>
-
-                    </div>
-
-                </div>
-
-                <div class="cart-product">
-
-                    <div class="cart-product-image">
-
-                        <img src="Images/Kids-Dress-1 (1).jpg" alt="Image Not Available" />
-
-                    </div>
-
-                    <div class="cart-product-data">
-
-                        <p>Product Name: ABC</p>
-
-                        <p>Price: 50 USD</p>
-
-                        <p>Quantity: 1</p>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div class="right-box">
-
-                <p>Total Price: 150 USD</p>
+                <p>Total Price: <span id="total-price"></span> USD</p>
 
                 <hr />
 
-                <p>Total Discount: 50 USD</p>
+                <p>Total Discount: <span id="discount-price"></span> USD</p>
 
                 <hr />
 
-                <h4 id='net-price'>Net Price: 100 USD</h4>
+                <h4>Net Price: <span id="net-price"></span> USD</h4>
 
                 <hr />
 
@@ -212,12 +150,14 @@
 
         <hr />
 
-        <p id='copyright'>Copyright © 2024</p>
+        <p id='copyright'>© <a href="https://hitarthpathak.github.io/" target="_blank">Hitarth Pathak</a></p>
 
     </div>
 
 </body>
 
 <script src="script.js"></script>
+
+<script src="Cart.js"></script>
 
 </html>

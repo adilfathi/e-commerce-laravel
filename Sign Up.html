@@ -6,7 +6,7 @@
 
     <link rel="icon" href="Images/Sign Up Icon.jpg">
 
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="Sign Up.css">
 
 </head>
 
@@ -74,7 +74,7 @@
 
             </a>
 
-            <div id="nav-cart-count">3</div>
+            <div id="cart-count">3</div>
 
         </div>
 
@@ -92,7 +92,7 @@
 
         <input id="password" type="password" placeholder='Enter Your Password' />
 
-        <input id="c-password" type="password" placeholder='Enter Your Confirm Password' />
+        <input id="confirm-password" type="password" placeholder='Enter Your Confirm Password' />
 
         <button onclick="sign_up()">Sign Up</button>
 
@@ -132,12 +132,88 @@
 
         <hr />
 
-        <p id='copyright'>Copyright © 2024</p>
+        <p id='copyright'>© <a href="https://hitarthpathak.github.io/" target="_blank">Hitarth Pathak</a></p>
 
     </div>
 
 </body>
 
 <script src="script.js"></script>
+
+<script>
+
+    let name = document.getElementById("name");
+    let e_mail = document.getElementById("e-mail");
+    let number = document.getElementById("number");
+    let password = document.getElementById("password");
+    let confirm_password = document.getElementById("confirm-password");
+
+    function sign_up() {
+
+        if (name.value == "") {
+
+            alert("Please Enter Your Full Name!");
+
+        }
+
+        else if (e_mail.value == "") {
+
+            alert("Please Enter Your E-Mail Address!");
+
+        }
+
+        else if (number.value == "") {
+
+            alert("Please Enter Your Mobile Number!");
+
+        }
+
+        else if (password.value == "") {
+
+            alert("Please Enter Your Password!");
+
+        }
+
+        else if (confirm_password.value == "") {
+
+            alert("Please Enter Your Confirm Password!");
+
+        }
+
+        else if (confirm_password.value !== password.value) {
+
+            alert("Confirm Password Is Not Same As Password!");
+
+        }
+
+        else {
+
+            let users_data = JSON.parse(localStorage.getItem("buyer")) || [];
+            let new_user = {
+                name: name.value,
+                e_mail: e_mail.value,
+                number: number.value,
+                password: password.value,
+                confirm_password: confirm_password.value
+            };
+            users_data.push(new_user);
+            localStorage.setItem("buyer", JSON.stringify(users_data));
+
+            name.value = "";
+            e_mail.value = "";
+            e_mail.value = "";
+            number.value = "";
+            password.value = "";
+            confirm_password.value = "";
+
+            alert("You Are Now Registered! Please Log In!");
+
+            document.location = "Login Page.html";
+
+        }
+
+    };
+
+</script>
 
 </html>

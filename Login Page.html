@@ -6,7 +6,7 @@
 
     <link rel="icon" href="Images/Login Icon.jpg">
 
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="Login Page.css">
 
 </head>
 
@@ -74,7 +74,7 @@
 
             </a>
 
-            <div id="nav-cart-count">3</div>
+            <div id="cart-count">3</div>
 
         </div>
 
@@ -138,12 +138,71 @@
 
         <hr />
 
-        <p id='copyright'>Copyright © 2024</p>
+        <p id='copyright'>© <a href="https://hitarthpathak.github.io/" target="_blank">Hitarth Pathak</a></p>
 
     </div>
 
 </body>
 
 <script src="script.js"></script>
+
+<script>
+
+    let e_mail = document.getElementById("e-mail");
+    let password = document.getElementById("password");
+    let checkbox = document.getElementById("check");
+
+    function log_in() {
+
+        let get_data = JSON.parse(localStorage.getItem("buyer")) || [];
+        let filtered_data = get_data.filter((filtered_data) => filtered_data.e_mail == e_mail.value);
+        let existed_data = filtered_data[0];
+
+        if (e_mail.value == "") {
+
+            alert("Please Enter Your E-Mail Address!");
+
+        }
+
+        else if (password.value == "") {
+
+            alert("Please Enter Your Password!");
+
+        }
+
+        else if (checkbox.checked == false) {
+
+            alert("Please Select The Check Box!");
+
+        }
+
+        else if (!existed_data) {
+
+            alert("User Does Not Exist! Sign Up First!");
+
+            document.location = "Sign Up.html";
+
+        }
+
+        else if (password.value != existed_data.password) {
+
+            alert("Please Enter Correct Password!");
+
+        }
+
+        else if (e_mail.value == existed_data.e_mail && password.value == existed_data.password) {
+
+            e_mail.value = "";
+            password.value = "";
+
+            alert("You Are Now Logged In! Please Shop!");
+
+            document.location = "index.html";
+
+        }
+
+    };
+
+</script>
 
 </html>
