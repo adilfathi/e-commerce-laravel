@@ -195,27 +195,13 @@ The application includes a fully functional dark mode toggle that:
 
 ## 🚀 Deployment
 
-### Deploy to Vercel
-
-This project is configured for deployment to Vercel. See [VERCEL_DEPLOY.md](./VERCEL_DEPLOY.md) for detailed deployment instructions.
-
-**Quick Start:**
-1. Push your code to GitHub/GitLab/Bitbucket
-2. Import project in Vercel dashboard
-3. Configure environment variables
-4. Deploy!
-
-**Important Notes:**
-- Vercel requires external database (recommended: Supabase)
-- Storage should use cloud services (S3, Cloudinary)
-- Queue workers and scheduled tasks need external services
-
-### Other Deployment Options
+This Laravel application can be deployed to various platforms:
 
 - **Railway**: Great for Laravel apps with built-in PostgreSQL
 - **Render**: Easy deployment with automatic SSL
 - **Fly.io**: Global edge deployment
 - **Traditional Hosting**: Shared hosting or VPS
+- **Cloud Platforms**: AWS, Google Cloud, Azure
 
 ## 🧪 Testing
 
