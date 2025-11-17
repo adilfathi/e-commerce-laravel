@@ -35,13 +35,6 @@
   "env": {
     "APP_ENV": "production",
     "APP_DEBUG": "false"
-  },
-  "functions": {
-    "public/index.php": {
-      "runtime": "php8.2",
-      "memory": 1024,
-      "maxDuration": 30
-    }
   }
 }
 
