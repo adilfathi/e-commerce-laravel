@@ -84,8 +84,7 @@ export default function Home({ topProducts = [] }) {
                             )}
                         </div>
                         
-                        {/* Decorative background element for the card */}
-                        <div className="absolute inset-0 bg-[var(--bg-secondary)] border border-[var(--border-color)] -z-10 transform scale-95 translate-y-6 translate-x-6"></div>
+
                     </div>
                 </div>
             </section>
@@ -107,7 +106,7 @@ export default function Home({ topProducts = [] }) {
                     </div>
                     
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {topProducts.slice(0, 4).map((product, idx) => (
+                        {topProducts.slice(1, 5).map((product, idx) => (
                             <div key={product.id} className="reveal" style={{ transitionDelay: `${idx * 100}ms` }}>
                                 <ProductCard product={product} />
                             </div>

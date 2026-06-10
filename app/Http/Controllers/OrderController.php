@@ -11,11 +11,27 @@ use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
+    public function index()
+    {
+        $orders = Order::where('user_id', Auth::id())
+            ->with('orderItems.product')
+            ->orderBy('created_at', 'desc')
+            ->get();
+            
+        return inertia('Orders', [
+            'orders' => $orders
+        ]);
+    }
+
     public function store(Request $request)
     {
         if (!Auth::check()) {
             return redirect()->route('login')->with('error', 'Please login to place an order');
         }
+
+        $request->validate([
+            'shipping_address' => 'required|string|max:1000'
+        ]);
 
         $cartItems = CartItem::where('user_id', Auth::id())
             ->with('product')
@@ -46,6 +62,7 @@ class OrderController extends Controller
                 'net_price' => $netPrice,
                 'status' => 'pending',
                 'payment_status' => 'pending',
+                'shipping_address' => $request->shipping_address,
                 'payment_expires_at' => now()->addHours(24),
             ]);
 

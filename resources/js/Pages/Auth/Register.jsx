@@ -18,7 +18,7 @@ export default function Register() {
 
     return (
         <MainLayout>
-            <Head title="Register - NEXUS" />
+            <Head title="Register - ECOMMERZZ" />
 
             <div className="flex items-center justify-center min-h-[80vh] animate-fade-up">
 
@@ -30,7 +30,7 @@ export default function Register() {
                             </svg>
                         </div>
                         <h2 className="text-3xl font-display font-bold text-[var(--text-primary)]">Create Account</h2>
-                        <p className="text-[var(--text-muted)] mt-2 font-sans">Join NEXUS for a premium shopping experience.</p>
+                        <p className="text-[var(--text-muted)] mt-2 font-sans">Join ECOMMERZZ for a premium shopping experience.</p>
                     </div>
 
                     <form onSubmit={submit} className="space-y-6">

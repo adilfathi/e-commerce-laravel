@@ -8,18 +8,19 @@ export default function MainLayout({ children }) {
     const { url } = usePage();
     const [isScrolled, setIsScrolled] = useState(false);
     const [blurAmount, setBlurAmount] = useState(8);
-    const [cartCount, setCartCount] = useState(0);
+    const { auth, cartCount, flash } = usePage().props;
+    const [toastMessage, setToastMessage] = useState(null);
+    const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
 
     useEffect(() => {
-        // Fetch real cart count
-        fetch('/cart/count')
-            .then(res => res.json())
-            .then(data => {
-                if (data.count !== undefined) {
-                    setCartCount(data.count);
-                }
-            })
-            .catch(err => console.error(err));
+        if (flash?.success) {
+            setToastMessage(flash.success);
+            const timer = setTimeout(() => setToastMessage(null), 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [flash]);
+
+    useEffect(() => {
 
         const handleScroll = () => {
             const scrollY = window.scrollY;
@@ -57,7 +58,7 @@ export default function MainLayout({ children }) {
                     {/* Logo */}
                     <Link href="/" className="flex items-center gap-2 group">
                         <span className="text-2xl font-display font-bold tracking-widest uppercase text-[var(--text-primary)] border-2 border-[var(--text-primary)] px-2 py-1">
-                            NEXUS
+                            ECOMMERZZ
                         </span>
                     </Link>
 
@@ -80,6 +81,11 @@ export default function MainLayout({ children }) {
                                 </Link>
                             );
                         })}
+                        {auth?.user && (
+                            <Link href="/orders" className="text-[var(--text-muted)] hover:text-[var(--text-primary)] text-sm font-medium uppercase tracking-widest transition-colors">
+                                My Orders
+                            </Link>
+                        )}
                     </div>
 
                     {/* Right Actions */}
@@ -115,11 +121,41 @@ export default function MainLayout({ children }) {
                         </Link>
 
                         {/* User */}
-                        <Link href="/admin/products" className="w-8 h-8 rounded-full border border-[var(--border-color)] flex items-center justify-center overflow-hidden hover:border-[var(--text-primary)] transition-colors bg-[var(--bg-secondary)]">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-[var(--text-primary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                            </svg>
-                        </Link>
+                        {auth?.user ? (
+                            <div className="relative">
+                                <button 
+                                    onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
+                                    className="w-8 h-8 rounded-full border border-[var(--border-color)] flex items-center justify-center overflow-hidden hover:border-[var(--text-primary)] transition-colors bg-[var(--bg-secondary)]"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-[var(--text-primary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                    </svg>
+                                </button>
+                                
+                                {isProfileDropdownOpen && (
+                                    <div className="absolute right-0 mt-2 w-48 bg-[var(--bg-secondary)] border border-[var(--border-color)] shadow-xl animate-fade-up z-50 py-2">
+                                        <div className="px-4 py-2 border-b border-[var(--border-color)] mb-2">
+                                            <p className="text-sm font-bold text-[var(--text-primary)] truncate">{auth.user.name}</p>
+                                        </div>
+                                        <Link href="/admin/products" className="block px-4 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-base)] transition-colors">
+                                            Admin Dashboard
+                                        </Link>
+                                        <Link href="/orders" className="block md:hidden px-4 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-base)] transition-colors">
+                                            My Orders
+                                        </Link>
+                                        <Link href="/logout" method="post" as="button" className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-[var(--bg-base)] transition-colors font-medium">
+                                            Logout
+                                        </Link>
+                                    </div>
+                                )}
+                            </div>
+                        ) : (
+                            <Link href="/login" className="w-8 h-8 rounded-full border border-[var(--border-color)] flex items-center justify-center overflow-hidden hover:border-[var(--text-primary)] transition-colors bg-[var(--bg-secondary)]">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-[var(--text-primary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                            </Link>
+                        )}
                     </div>
                 </div>
             </nav>
@@ -134,9 +170,19 @@ export default function MainLayout({ children }) {
             {/* Footer */}
             <footer className="glass-panel rounded-none border-x-0 border-b-0 py-8 mt-auto">
                 <div className="container mx-auto px-4 md:px-6 text-center text-[var(--text-muted)]">
-                    <p>&copy; {new Date().getFullYear()} NEXUS E-Commerce. All rights reserved.</p>
+                    <p>&copy; {new Date().getFullYear()} ECOMMERZZ E-Commerce. All rights reserved.</p>
                 </div>
             </footer>
+
+            {/* Toast Notification */}
+            {toastMessage && (
+                <div className="fixed bottom-4 right-4 z-50 glass-panel border border-green-500/50 bg-green-500/10 text-green-500 px-6 py-3 rounded-none shadow-xl animate-fade-up flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    <span className="font-medium tracking-wide">{toastMessage}</span>
+                </div>
+            )}
         </div>
     );
 }

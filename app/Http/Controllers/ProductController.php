@@ -9,7 +9,7 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $topProducts = Product::inRandomOrder()->take(4)->get();
+        $topProducts = Product::inRandomOrder()->take(5)->get();
         return inertia('Home', compact('topProducts'));
     }
 

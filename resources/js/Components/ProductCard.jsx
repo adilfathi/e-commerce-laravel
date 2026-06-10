@@ -101,7 +101,7 @@ export default function ProductCard({ product }) {
                         className="w-full flex justify-center items-center py-3 group-hover:shadow-[var(--glow-violet)] group-hover:border-violet-500/40"
                         onClick={handleAddToCart}
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                         </svg>
                         Add to Cart

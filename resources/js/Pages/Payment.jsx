@@ -9,22 +9,7 @@ export default function Payment({ order, midtrans_client_key, is_production }) {
     const [isExpired, setIsExpired] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
 
-    useEffect(() => {
-        // Load Midtrans Script dynamically
-        const scriptUrl = is_production 
-            ? 'https://app.midtrans.com/snap/snap.js' 
-            : 'https://app.sandbox.midtrans.com/snap/snap.js';
 
-        const script = document.createElement('script');
-        script.src = scriptUrl;
-        script.setAttribute('data-client-key', midtrans_client_key);
-        script.async = true;
-        document.body.appendChild(script);
-
-        return () => {
-            document.body.removeChild(script);
-        };
-    }, [is_production, midtrans_client_key]);
 
     useEffect(() => {
         if (!order.payment_expires_at) return;
@@ -56,52 +41,10 @@ export default function Payment({ order, midtrans_client_key, is_production }) {
         return () => clearInterval(interval);
     }, [order.payment_expires_at]);
 
-    const handlePayment = async () => {
+    const handlePayment = () => {
         setIsProcessing(true);
-
-        try {
-            const response = await axios.post(`/midtrans/snap-token/${order.id}`, {}, {
-                headers: {
-                    'Accept': 'application/json'
-                }
-            });
-
-            const data = response.data;
-
-            if (data.snap_token) {
-                window.snap.pay(data.snap_token, {
-                    onSuccess: function(result) {
-                        router.get('/midtrans/success');
-                    },
-                    onPending: function(result) {
-                        console.log('Payment pending:', result);
-                        router.get('/midtrans/success', { status: 'pending' });
-                    },
-                    onError: function(result) {
-                        router.get('/midtrans/failure');
-                    },
-                    onClose: function() {
-                        axios.post(`/midtrans/mark-failed/${order.id}`, {}, {
-                            headers: {
-                                'Accept': 'application/json'
-                            }
-                        }).then(() => {
-                            alert('Payment was cancelled. Order has been marked as failed.');
-                            router.get('/midtrans/failure');
-                        }).catch(() => {
-                            setIsProcessing(false);
-                        });
-                    }
-                });
-            } else {
-                alert('Failed to initialize payment. Please try again.');
-                setIsProcessing(false);
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('An error occurred. Please try again.');
-            setIsProcessing(false);
-        }
+        // Redirect to the Payment Simulator page
+        router.visit(`/simulator/${order.id}`);
     };
 
     return (

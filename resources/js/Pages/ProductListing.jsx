@@ -34,7 +34,7 @@ export default function ProductListing({ products, category }) {
 
     return (
         <MainLayout>
-            <Head title={`${category.charAt(0).toUpperCase() + category.slice(1)} - NEXUS`} />
+            <Head title={`${category.charAt(0).toUpperCase() + category.slice(1)} - ECOMMERZZ`} />
 
             {/* Header */}
             <div className="mb-8 flex flex-col md:flex-row justify-between items-start md:items-end gap-4 animate-fade-up">

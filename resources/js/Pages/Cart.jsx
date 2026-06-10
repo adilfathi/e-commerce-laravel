@@ -1,10 +1,14 @@
 import { Head, Link, router, usePage } from '@inertiajs/react';
+import { useState } from 'react';
 import MainLayout from '@/Layouts/MainLayout';
 import GlassButton from '@/Components/GlassButton';
 
 export default function Cart({ cartItems, totalPrice, discount, netPrice, totalOldPrice }) {
     const { props } = usePage();
     const flash = props.flash || {};
+    const errors = props.errors || {};
+
+    const [shippingAddress, setShippingAddress] = useState('');
 
     const handleUpdateQuantity = (id, quantity) => {
         router.put(`/cart/update/${id}`, { quantity }, { preserveScroll: true });
@@ -16,7 +20,9 @@ export default function Cart({ cartItems, totalPrice, discount, netPrice, totalO
 
     const handlePlaceOrder = (e) => {
         e.preventDefault();
-        router.post('/order', {}, { preserveScroll: true });
+        router.post('/order', {
+            shipping_address: shippingAddress
+        }, { preserveScroll: true });
     };
 
     return (
@@ -113,6 +119,20 @@ export default function Cart({ cartItems, totalPrice, discount, netPrice, totalO
                                 </div>
 
                                 <form onSubmit={handlePlaceOrder}>
+                                    <div className="mb-6">
+                                        <label htmlFor="shipping_address" className="block text-sm font-medium text-[var(--text-primary)] mb-2 uppercase tracking-wider">Shipping Address *</label>
+                                        <textarea 
+                                            id="shipping_address"
+                                            name="shipping_address"
+                                            rows="3"
+                                            required
+                                            value={shippingAddress}
+                                            onChange={(e) => setShippingAddress(e.target.value)}
+                                            className="w-full bg-transparent border border-[var(--border-color)] p-3 text-[var(--text-primary)] focus-visible:outline-none focus-visible:border-[var(--text-primary)] transition-colors"
+                                            placeholder="Enter your full shipping address here..."
+                                        ></textarea>
+                                        {errors.shipping_address && <p className="text-red-500 text-sm mt-1">{errors.shipping_address}</p>}
+                                    </div>
                                     <GlassButton type="submit" className="w-full py-4 text-lg">
                                         CHECKOUT NOW
                                     </GlassButton>

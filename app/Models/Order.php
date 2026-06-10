@@ -19,6 +19,7 @@ class Order extends Model
         'payment_status',
         'transaction_id',
         'payment_expires_at',
+        'shipping_address',
     ];
 
     protected $casts = [

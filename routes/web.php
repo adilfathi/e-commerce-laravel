@@ -5,7 +5,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\OrderController;
-use App\Http\Controllers\MidtransController;
+
 
 // Home
 Route::get('/', [ProductController::class, 'index'])->name('home');
@@ -34,22 +34,24 @@ Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('car
 Route::get('/cart/count', [CartController::class, 'count'])->name('cart.count');
 
 // Orders
+Route::get('/orders', [OrderController::class, 'index'])->name('orders.index')->middleware('auth');
 Route::post('/order', [OrderController::class, 'store'])->name('order.store')->middleware('auth');
 Route::get('/payment/{orderId}', [OrderController::class, 'payment'])->name('payment')->middleware('auth');
 Route::post('/payment/{orderId}/complete', [OrderController::class, 'completePayment'])->name('payment.complete')->middleware('auth');
 
-// Midtrans Payment Gateway
-Route::post('/midtrans/snap-token/{orderId}', [MidtransController::class, 'createSnapToken'])->name('midtrans.snap-token')->middleware('auth');
-Route::post('/midtrans/mark-failed/{orderId}', [MidtransController::class, 'markFailed'])->name('midtrans.mark-failed')->middleware('auth');
-Route::post('/midtrans/notification', [MidtransController::class, 'notification'])->name('midtrans.notification');
-Route::get('/midtrans/success', [MidtransController::class, 'success'])->name('midtrans.success');
-Route::get('/midtrans/failure', [MidtransController::class, 'failure'])->name('midtrans.failure');
+// Custom Payment Simulator Gateway
+use App\Http\Controllers\PaymentSimulatorController;
+Route::get('/simulator/success', [PaymentSimulatorController::class, 'success'])->name('simulator.success');
+Route::get('/simulator/failure', [PaymentSimulatorController::class, 'failure'])->name('simulator.failure');
+Route::get('/simulator/{orderId}', [PaymentSimulatorController::class, 'show'])->name('simulator.show')->middleware('auth');
+Route::post('/simulator/{orderId}/process', [PaymentSimulatorController::class, 'process'])->name('simulator.process')->middleware('auth');
 
 // Admin Routes
 use App\Http\Controllers\AdminController;
 Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::get('/products', [AdminController::class, 'index'])->name('admin.products.index');
     Route::post('/products', [AdminController::class, 'store'])->name('admin.products.store');
+    Route::put('/products/{id}', [AdminController::class, 'update'])->name('admin.products.update');
     Route::delete('/products/{id}', [AdminController::class, 'destroy'])->name('admin.products.destroy');
     Route::post('/products/clear', [AdminController::class, 'clearAll'])->name('admin.products.clear');
 });

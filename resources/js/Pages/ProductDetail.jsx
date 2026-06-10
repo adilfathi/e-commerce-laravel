@@ -58,7 +58,7 @@ export default function ProductDetail({ product, can_review }) {
 
     return (
         <MainLayout>
-            <Head title={`${product.name} - NEXUS`} />
+            <Head title={`${product.name} - ECOMMERZZ`} />
 
             {/* Breadcrumb */}
             <div className="flex items-center gap-2 text-sm text-[var(--text-muted)] mb-8 animate-fade-up">
@@ -236,7 +236,7 @@ export default function ProductDetail({ product, can_review }) {
                             </div>
                             <div className="flex justify-between py-3 border-b border-[var(--border-color)]">
                                 <span className="text-[var(--text-muted)]">Brand</span>
-                                <span className="text-[var(--text-primary)]">{product.seller_name || 'NEXUS Exclusive'}</span>
+                                <span className="text-[var(--text-primary)]">{product.seller_name || 'ECOMMERZZ Exclusive'}</span>
                             </div>
                             <div className="flex justify-between py-3 border-b border-[var(--border-color)]">
                                 <span className="text-[var(--text-muted)]">SKU</span>

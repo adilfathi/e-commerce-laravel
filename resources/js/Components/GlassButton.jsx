@@ -32,7 +32,7 @@ export default function GlassButton({
             className={`btn rounded-none uppercase tracking-wider font-sans font-medium text-sm transition-all duration-300 ${variantStyles} ${disabled ? 'opacity-50 cursor-not-allowed hover:scale-100 hover:opacity-50' : ''} ${className}`}
             {...props}
         >
-            <span className="relative z-10">{children}</span>
+            <span className="relative z-10 flex items-center justify-center gap-2">{children}</span>
         </button>
     );
 }

@@ -3,16 +3,19 @@ import MainLayout from '@/Layouts/MainLayout';
 import { useState, useEffect, useRef } from 'react';
 import GlassButton from '@/Components/GlassButton';
 
-export default function Products({ auth, products }) {
+export default function Products({ auth, products, stats }) {
+    const [editingId, setEditingId] = useState(null);
+
     // Form State
-    const { data, setData, post, processing, errors: formErrors, reset, clearErrors } = useForm({
+    const { data, setData, post, put, processing, errors: formErrors, reset, clearErrors } = useForm({
         name: '',
         category: 'men',
         new_price: '',
         old_price: '',
         product_image: '',
         description: '',
-        specifications: ''
+        specifications: '',
+        stock: ''
     });
 
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -42,11 +45,15 @@ export default function Products({ auth, products }) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        post('/admin/products', {
-            onSuccess: () => {
-                closeModal();
-            }
-        });
+        if (editingId) {
+            put(`/admin/products/${editingId}`, {
+                onSuccess: () => closeModal()
+            });
+        } else {
+            post('/admin/products', {
+                onSuccess: () => closeModal()
+            });
+        }
     };
 
     const handleDelete = (id) => {
@@ -62,8 +69,26 @@ export default function Products({ auth, products }) {
     };
 
     const openModal = () => {
+        setEditingId(null);
         setIsModalOpen(true);
-        // Focus first input after modal opens
+        setTimeout(() => {
+            firstInputRef.current?.focus();
+        }, 100);
+    };
+
+    const openEditModal = (product) => {
+        setEditingId(product.id);
+        setData({
+            name: product.name,
+            category: product.category,
+            new_price: product.new_price,
+            old_price: product.old_price,
+            product_image: product.product_image,
+            description: product.description,
+            specifications: product.specifications ? (typeof product.specifications === 'string' ? JSON.parse(product.specifications).join('\n') : product.specifications.join('\n')) : '',
+            stock: product.stock
+        });
+        setIsModalOpen(true);
         setTimeout(() => {
             firstInputRef.current?.focus();
         }, 100);
@@ -71,6 +96,7 @@ export default function Products({ auth, products }) {
 
     const closeModal = () => {
         setIsModalOpen(false);
+        setEditingId(null);
         clearErrors();
         reset();
     };
@@ -102,7 +128,29 @@ export default function Products({ auth, products }) {
                 </div>
             </div>
 
-
+            {/* Sales Dashboard */}
+            {stats && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div className="glass-panel p-6 border-l-4 border-l-[var(--accent-primary)] animate-fade-up">
+                        <p className="text-[var(--text-muted)] text-sm uppercase tracking-widest mb-2">Total Revenue</p>
+                        <h3 className="text-3xl font-mono font-bold text-[var(--accent-warm)]">
+                            ${parseFloat(stats.totalRevenue || 0).toFixed(2)}
+                        </h3>
+                    </div>
+                    <div className="glass-panel p-6 border-l-4 border-l-blue-500 animate-fade-up" style={{ animationDelay: '100ms' }}>
+                        <p className="text-[var(--text-muted)] text-sm uppercase tracking-widest mb-2">Total Orders (Paid)</p>
+                        <h3 className="text-3xl font-mono font-bold text-[var(--text-primary)]">
+                            {stats.totalOrders || 0}
+                        </h3>
+                    </div>
+                    <div className="glass-panel p-6 border-l-4 border-l-[var(--text-primary)] animate-fade-up" style={{ animationDelay: '200ms' }}>
+                        <p className="text-[var(--text-muted)] text-sm uppercase tracking-widest mb-2">Products in Catalog</p>
+                        <h3 className="text-3xl font-mono font-bold text-[var(--text-primary)]">
+                            {stats.totalProducts || 0}
+                        </h3>
+                    </div>
+                </div>
+            )}
 
             {/* Accessible Minimal Table */}
             <main className="border border-[var(--border-color)] bg-[var(--bg-secondary)] overflow-x-auto">
@@ -113,13 +161,14 @@ export default function Products({ auth, products }) {
                             <th scope="col" className="p-4 text-xs tracking-widest uppercase text-[var(--text-muted)] font-medium">Name</th>
                             <th scope="col" className="p-4 text-xs tracking-widest uppercase text-[var(--text-muted)] font-medium">Category</th>
                             <th scope="col" className="p-4 text-xs tracking-widest uppercase text-[var(--text-muted)] font-medium">Price</th>
+                            <th scope="col" className="p-4 text-xs tracking-widest uppercase text-[var(--text-muted)] font-medium text-center">Stock</th>
                             <th scope="col" className="p-4 text-xs tracking-widest uppercase text-[var(--text-muted)] font-medium text-right">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {!products || products.length === 0 ? (
                             <tr>
-                                <td colSpan="5" className="text-center p-8 text-[var(--text-muted)]">
+                                <td colSpan="6" className="text-center p-8 text-[var(--text-muted)]">
                                     No products found in the database.
                                 </td>
                             </tr>
@@ -147,7 +196,19 @@ export default function Products({ auth, products }) {
                                             <div className="text-xs line-through text-[var(--text-muted)] mt-0.5">${parseFloat(product.old_price).toFixed(2)}</div>
                                         )}
                                     </td>
+                                    <td className="p-4 text-center">
+                                        <span className={`inline-block px-2 py-1 text-xs font-bold rounded ${product.stock > 0 ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'}`}>
+                                            {product.stock}
+                                        </span>
+                                    </td>
                                     <td className="p-4 text-right">
+                                        <button 
+                                            className="text-sm font-medium uppercase tracking-wider text-[var(--accent-secondary)] hover:text-cyan-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-primary)] px-2 py-1 mr-2"
+                                            onClick={() => openEditModal(product)}
+                                            aria-label={`Edit product ${product.name}`}
+                                        >
+                                            Edit
+                                        </button>
                                         <button 
                                             className="text-sm font-medium uppercase tracking-wider text-[var(--text-muted)] hover:text-red-500 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-primary)] px-2 py-1"
                                             onClick={() => handleDelete(product.id)}
@@ -176,7 +237,9 @@ export default function Products({ auth, products }) {
                         role="document"
                     >
                         <div className="flex justify-between items-center mb-6">
-                            <h2 id="modal-title" className="text-2xl font-display font-bold uppercase tracking-wide text-[var(--text-primary)]">Add New Product</h2>
+                            <h2 id="modal-title" className="text-2xl font-display font-bold uppercase tracking-wide text-[var(--text-primary)]">
+                                {editingId ? 'Edit Product' : 'Add New Product'}
+                            </h2>
                             <button 
                                 onClick={closeModal}
                                 className="text-[var(--text-muted)] hover:text-[var(--text-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-primary)] p-1"
@@ -296,6 +359,21 @@ export default function Products({ auth, products }) {
                                     </div>
                                     {formErrors.new_price && <p className="text-red-500 text-sm mt-1" role="alert">{formErrors.new_price[0]}</p>}
                                 </div>
+                            </div>
+
+                            <div>
+                                <label htmlFor="stock" className="block text-sm font-medium text-[var(--text-primary)] mb-2 uppercase tracking-wider">Initial Stock *</label>
+                                <input 
+                                    id="stock"
+                                    type="number" 
+                                    name="stock"
+                                    min="0"
+                                    className="w-full bg-transparent border border-[var(--border-color)] p-3 text-[var(--text-primary)] font-mono focus-visible:outline-none focus-visible:border-[var(--text-primary)] transition-colors" 
+                                    value={data.stock} 
+                                    onChange={handleChange}
+                                    required
+                                />
+                                {formErrors.stock && <p className="text-red-500 text-sm mt-1" role="alert">{formErrors.stock[0]}</p>}
                             </div>
 
                             <div>

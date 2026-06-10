@@ -17,7 +17,7 @@ export default function Login() {
 
     return (
         <MainLayout>
-            <Head title="Log In - NEXUS" />
+            <Head title="Log In - ECOMMERZZ" />
 
             <div className="flex items-center justify-center min-h-[70vh] animate-fade-up">
 
