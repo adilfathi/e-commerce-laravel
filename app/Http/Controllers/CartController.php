@@ -30,7 +30,13 @@ class CartController extends Controller
         $discount = $totalOldPrice - $totalPrice;
         $netPrice = $totalPrice;
 
-        return view('cart', compact('cartItems', 'totalPrice', 'discount', 'netPrice', 'totalOldPrice'));
+        return inertia('Cart', [
+            'cartItems' => $cartItems,
+            'totalPrice' => $totalPrice,
+            'discount' => $discount,
+            'netPrice' => $netPrice,
+            'totalOldPrice' => $totalOldPrice
+        ]);
     }
 
     public function add(Request $request, $productId)

@@ -4,112 +4,68 @@ namespace Database\Seeders;
 
 use App\Models\Product;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Http;
 
 class ProductSeeder extends Seeder
 {
-    /**
-     * Unsplash image IDs for different categories (real photo IDs)
-     */
-    private array $menImages = [
-        '1463453091185-61582044d556', '1515889109617-4c8b2c0a88a3', '1507003211169-0a1dd7228f2d',
-        '1506794778202-cad84cf45f1d', '1500648767791-00dcc994a43e', '1519085360753-af7119f542e2',
-        '1507003211169-0a1dd7228f2d', '1506794778202-cad84cf45f1d', '1500648767791-00dcc994a43e',
-        '1519085360753-af7119f542e2', '1463453091185-61582044d556', '1515889109617-4c8b2c0a88a3',
-        '1507003211169-0a1dd7228f2d', '1506794778202-cad84cf45f1d', '1500648767791-00dcc994a43e',
-        '1519085360753-af7119f542e2', '1463453091185-61582044d556', '1515889109617-4c8b2c0a88a3',
-    ];
-
-    private array $womenImages = [
-        '1490578474895-699cd4e2cf59', '1515889109617-4c8b2c0a88c0', '1494790108377-be9c29b29330',
-        '1508214751196-bcfd4ca60f91', '1517841905240-472988babdf9', '1500648767791-00dcc994a43e',
-        '1494790108377-be9c29b29330', '1508214751196-bcfd4ca60f91', '1517841905240-472988babdf9',
-        '1500648767791-00dcc994a43e', '1490578474895-699cd4e2cf59', '1515889109617-4c8b2c0a88c0',
-        '1494790108377-be9c29b29330', '1508214751196-bcfd4ca60f91', '1517841905240-472988babdf9',
-        '1500648767791-00dcc994a43e', '1490578474895-699cd4e2cf59', '1515889109617-4c8b2c0a88c0',
-    ];
-
-    private array $kidsImages = [
-        '1503454537195-1dcabb7ffcd9', '1515889109617-4c8b2c0a88e0', '1503454537195-1dcabb7ffcd9',
-        '1515889109617-4c8b2c0a88e0', '1503454537195-1dcabb7ffcd9', '1515889109617-4c8b2c0a88e0',
-        '1503454537195-1dcabb7ffcd9', '1515889109617-4c8b2c0a88e0', '1503454537195-1dcabb7ffcd9',
-        '1515889109617-4c8b2c0a88e0', '1503454537195-1dcabb7ffcd9', '1515889109617-4c8b2c0a88e0',
-        '1503454537195-1dcabb7ffcd9', '1515889109617-4c8b2c0a88e0', '1503454537195-1dcabb7ffcd9',
-        '1515889109617-4c8b2c0a88e0', '1503454537195-1dcabb7ffcd9', '1515889109617-4c8b2c0a88e0',
-    ];
-
-    /**
-     * Generate Unsplash URL from image ID
-     */
-    private function getUnsplashUrl(string $imageId, int $width = 800, int $height = 800): string
-    {
-        return "https://images.unsplash.com/photo-{$imageId}?w={$width}&h={$height}&fit=crop&auto=format";
-    }
-
-    /**
-     * Get random image IDs for a category
-     */
-    private function getRandomImages(string $category, int $count = 5): array
-    {
-        $pool = match($category) {
-            'men' => $this->menImages,
-            'women' => $this->womenImages,
-            'kids' => $this->kidsImages,
-            default => $this->menImages,
-        };
-
-        shuffle($pool);
-        return array_slice($pool, 0, min($count, count($pool)));
-    }
-
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        $jsonPath = base_path('Products.json');
-        
-        if (!File::exists($jsonPath)) {
-            $this->command->error('Products.json file not found!');
+        $this->command->info('Fetching products from Platzi Fake Store API...');
+
+        // Category 1 is Clothes, Category 4 is Shoes
+        $response = Http::get('https://api.escuelajs.co/api/v1/products?limit=30&categoryId=1');
+        $shoesResponse = Http::get('https://api.escuelajs.co/api/v1/products?limit=10&categoryId=4');
+
+        $products = array_merge($response->json() ?? [], $shoesResponse->json() ?? []);
+
+        if (empty($products)) {
+            $this->command->error('Failed to fetch products or API returned empty array.');
             return;
         }
 
-        $products = json_decode(File::get($jsonPath), true);
-        $imageIndex = 0;
+        $categories = ['men', 'women', 'kids'];
 
-        foreach ($products as $product) {
-            $category = $product['category'] ?? 'men';
-            $imagePool = match($category) {
-                'men' => $this->menImages,
-                'women' => $this->womenImages,
-                'kids' => $this->kidsImages,
-                default => $this->menImages,
-            };
+        foreach ($products as $index => $item) {
+            // Some Platzi images have brackets around them like '["url"]' due to a bug in their DB.
+            // Let's clean the image URL just in case.
+            $images = $item['images'] ?? [];
+            $mainImageUrl = 'https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg'; // Fallback
+            $subImages = [];
 
-            // Get main image
-            $mainImageId = $imagePool[$imageIndex % count($imagePool)];
-            $mainImageUrl = $this->getUnsplashUrl($mainImageId);
+            if (count($images) > 0) {
+                // Fix for Platzi's weird array format sometimes containing serialized strings
+                $firstImage = $images[0];
+                if (is_string($firstImage) && str_starts_with($firstImage, '["')) {
+                    $decoded = json_decode($firstImage, true);
+                    if (is_array($decoded) && count($decoded) > 0) {
+                        $images = $decoded;
+                    }
+                }
+                $mainImageUrl = $images[0] ?? $mainImageUrl;
+                $subImages = array_slice($images, 0, 5);
+            }
 
-            // Generate sub images (5 variations)
-            $subImageIds = $this->getRandomImages($category, 5);
-            $subImages = array_map(fn($id) => $this->getUnsplashUrl($id), $subImageIds);
+            // Assign category based on index to ensure even distribution
+            $category = $categories[$index % 3];
 
             Product::create([
-                'name' => $product['product_name'] ?? 'Product',
-                'description' => $product['product_description'] ?? '',
+                'name' => $item['title'] ?? 'Modern Product',
+                'description' => $item['description'] ?? 'Premium quality item.',
                 'category' => $category,
                 'product_image' => $mainImageUrl,
                 'product_sub_images' => $subImages,
-                'old_price' => (float) str_replace([' USD', 'USD', '$'], '', $product['old_price'] ?? '0'),
-                'new_price' => (float) str_replace([' USD', 'USD', '$'], '', $product['new_price'] ?? '0'),
-                'seller_name' => $product['seller_name'] ?? null,
-                'rating' => !empty($product['ratings']) ? 5 : 0,
-                'stock' => (int) ($product['quantity'] ?? 10),
+                'old_price' => (float) ($item['price'] * 1.2), // Generate a fake old price
+                'new_price' => (float) $item['price'],
+                'seller_name' => 'Platzi Premium',
+                'rating' => rand(3, 5),
+                'stock' => rand(10, 50),
             ]);
-
-            $imageIndex++;
         }
 
-        $this->command->info('Products seeded successfully with Unsplash images!');
+        $this->command->info('Products seeded successfully from Platzi API!');
     }
 }
+

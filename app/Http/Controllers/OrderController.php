@@ -94,7 +94,11 @@ class OrderController extends Controller
             return redirect()->route('cart')->with('error', 'This order has been cancelled or expired. Please place a new order.');
         }
 
-        return view('payment', compact('order'));
+        return inertia('Payment', [
+            'order' => $order,
+            'midtrans_client_key' => config('midtrans.client_key'),
+            'is_production' => config('midtrans.is_production')
+        ]);
     }
 
     public function completePayment(Request $request, $orderId)

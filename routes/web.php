@@ -15,6 +15,10 @@ Route::get('/category/{category}', [ProductController::class, 'show'])->name('ca
 Route::get('/product/{id}', [ProductController::class, 'details'])->name('product.details');
 Route::get('/new-collections', [ProductController::class, 'newCollections'])->name('new-collections');
 
+// Reviews
+use App\Http\Controllers\ReviewController;
+Route::post('/product/{id}/review', [ReviewController::class, 'store'])->name('product.review')->middleware('auth');
+
 // Authentication
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login')->middleware('guest');
 Route::post('/login', [AuthController::class, 'login']);
@@ -40,3 +44,12 @@ Route::post('/midtrans/mark-failed/{orderId}', [MidtransController::class, 'mark
 Route::post('/midtrans/notification', [MidtransController::class, 'notification'])->name('midtrans.notification');
 Route::get('/midtrans/success', [MidtransController::class, 'success'])->name('midtrans.success');
 Route::get('/midtrans/failure', [MidtransController::class, 'failure'])->name('midtrans.failure');
+
+// Admin Routes
+use App\Http\Controllers\AdminController;
+Route::middleware(['auth'])->prefix('admin')->group(function () {
+    Route::get('/products', [AdminController::class, 'index'])->name('admin.products.index');
+    Route::post('/products', [AdminController::class, 'store'])->name('admin.products.store');
+    Route::delete('/products/{id}', [AdminController::class, 'destroy'])->name('admin.products.destroy');
+    Route::post('/products/clear', [AdminController::class, 'clearAll'])->name('admin.products.clear');
+});

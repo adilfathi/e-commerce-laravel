@@ -11,12 +11,12 @@ class AuthController extends Controller
 {
     public function showLogin()
     {
-        return view('login');
+        return inertia('Auth/Login');
     }
 
     public function showRegister()
     {
-        return view('register');
+        return inertia('Auth/Register');
     }
 
     public function login(Request $request)

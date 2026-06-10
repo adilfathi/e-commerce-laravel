@@ -9,28 +9,40 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $menProducts = Product::where('category', 'men')->take(4)->get();
-        $womenProducts = Product::where('category', 'women')->take(4)->get();
-        $kidsProducts = Product::where('category', 'kids')->take(4)->get();
-        
-        return view('home', compact('menProducts', 'womenProducts', 'kidsProducts'));
+        $topProducts = Product::inRandomOrder()->take(4)->get();
+        return inertia('Home', compact('topProducts'));
     }
 
     public function show($category)
     {
         $products = Product::where('category', $category)->get();
-        return view('category', compact('products', 'category'));
+        return inertia('ProductListing', compact('products', 'category'));
     }
 
     public function details($id)
     {
-        $product = Product::findOrFail($id);
-        return view('product-details', compact('product'));
+        $product = Product::with(['reviews.user'])->findOrFail($id);
+        
+        $can_review = false;
+        if (auth()->check()) {
+            // Check if user has an order containing this product
+            $can_review = auth()->user()->orders()->whereHas('orderItems', function ($query) use ($id) {
+                $query->where('product_id', $id);
+            })->exists();
+        }
+
+        return inertia('ProductDetail', [
+            'product' => $product,
+            'can_review' => $can_review
+        ]);
     }
 
     public function newCollections()
     {
         $products = Product::latest()->take(12)->get();
-        return view('new-collections', compact('products'));
+        return inertia('ProductListing', [
+            'products' => $products,
+            'category' => 'New Collections'
+        ]);
     }
 }
