@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  # Web Server (Nginx) - Handles requests and static files
+  web:
+    image: nginx:alpine
+    container_name: ecommerzz-web-prod
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      # Mount the static assets volume to serve files directly
+      - static-assets:/var/www/public:ro
+    networks:
+      - ecommerzz-network
+    depends_on:
+      - app
+
+  # Laravel Application Server (PHP-FPM)
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ecommerzz-app-prod
+    container_name: ecommerzz-app-prod
+    restart: unless-stopped
+    # We do NOT mount ./:/var/www here. The code is baked into the image.
+    volumes:
+      # We share the /var/www/public folder from the built image with the nginx container
+      - static-assets:/var/www/public
+    networks:
+      - ecommerzz-network
+    environment:
+      # Force production mode for security and optimization
+      - APP_ENV=production
+      - APP_DEBUG=false
+      # Pass database credentials
+      - DB_CONNECTION=${DB_CONNECTION}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_DATABASE=${DB_DATABASE}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+
+networks:
+  ecommerzz-network:
+    driver: bridge
+
+volumes:
+  # Named volume to share static files between 'app' and 'web' containers
+  static-assets:

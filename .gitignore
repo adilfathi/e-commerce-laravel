@@ -3,6 +3,7 @@
 .env
 .env.backup
 .env.production
+.env.prod
 .phpactor.json
 .phpunit.result.cache
 /.fleet
@@ -22,3 +23,19 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Gemini / AI Assistant Data
+.gemini/
+
+# SQLite databases
+/database/*.sqlite
+/database/*.sqlite-journal
+
+# NPM / Yarn Logs
+npm-debug.log
+yarn-error.log
+yarn-debug.log
+.pnpm-debug.log
+
+# Docker
+docker-compose.override.yml
