@@ -4,11 +4,12 @@ import MainLayout from '@/Layouts/MainLayout';
 import ProductCard from '@/Components/ProductCard';
 
 export default function ProductListing({ products, category }) {
-    const [sortedProducts, setSortedProducts] = useState(products);
+    const productItems = products.data || [];
+    const [sortedProducts, setSortedProducts] = useState(productItems);
     const [sortOrder, setSortOrder] = useState('newest');
 
     useEffect(() => {
-        let sorted = [...products];
+        let sorted = [...productItems];
         if (sortOrder === 'price_asc') sorted.sort((a, b) => a.new_price - b.new_price);
         if (sortOrder === 'price_desc') sorted.sort((a, b) => b.new_price - a.new_price);
         if (sortOrder === 'newest') sorted.sort((a, b) => b.id - a.id);
@@ -113,12 +114,34 @@ export default function ProductListing({ products, category }) {
                             <p className="text-[var(--text-muted)]">Try adjusting your filters or search criteria.</p>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-                            {sortedProducts.map((product, idx) => (
-                                <div key={product.id} className="reveal" style={{ transitionDelay: `${(idx % 6) * 100}ms` }}>
-                                    <ProductCard product={product} />
+                        <div>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                                {sortedProducts.map((product, idx) => (
+                                    <div key={product.id} className="reveal" style={{ transitionDelay: `${(idx % 6) * 100}ms` }}>
+                                        <ProductCard product={product} />
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* Pagination */}
+                            {products.links && (
+                                <div className="mt-12 flex justify-center">
+                                    <div className="flex flex-wrap gap-1">
+                                        {products.links.map((link, key) => (
+                                            <Link
+                                                key={key}
+                                                href={link.url || '#'}
+                                                className={`px-4 py-2 border text-sm font-mono transition-colors ${
+                                                    link.active 
+                                                        ? 'bg-[var(--text-primary)] text-[var(--bg-base)] border-[var(--text-primary)]' 
+                                                        : 'bg-transparent text-[var(--text-muted)] border-[var(--border-color)] hover:text-[var(--text-primary)] hover:border-[var(--text-primary)]'
+                                                } ${!link.url && 'opacity-50 cursor-not-allowed'}`}
+                                                dangerouslySetInnerHTML={{ __html: link.label }}
+                                            />
+                                        ))}
+                                    </div>
                                 </div>
-                            ))}
+                            )}
                         </div>
                     )}
                 </div>

@@ -48,7 +48,8 @@ Route::post('/simulator/{orderId}/process', [PaymentSimulatorController::class, 
 
 // Admin Routes
 use App\Http\Controllers\AdminController;
-Route::middleware(['auth'])->prefix('admin')->group(function () {
+Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
+    Route::get('/orders', [AdminController::class, 'orders'])->name('admin.orders.index');
     Route::get('/products', [AdminController::class, 'index'])->name('admin.products.index');
     Route::post('/products', [AdminController::class, 'store'])->name('admin.products.store');
     Route::put('/products/{id}', [AdminController::class, 'update'])->name('admin.products.update');

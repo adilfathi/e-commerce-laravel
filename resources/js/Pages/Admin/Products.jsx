@@ -1,9 +1,10 @@
-import { Head, router, useForm } from '@inertiajs/react';
+import { Head, Link, router, useForm } from '@inertiajs/react';
 import MainLayout from '@/Layouts/MainLayout';
 import { useState, useEffect, useRef } from 'react';
 import GlassButton from '@/Components/GlassButton';
 
 export default function Products({ auth, products, stats }) {
+    const productItems = products.data || [];
     const [editingId, setEditingId] = useState(null);
 
     // Form State
@@ -105,7 +106,12 @@ export default function Products({ auth, products, stats }) {
         <MainLayout user={auth?.user}>
             <Head title="Admin Products" />
 
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4 mt-8">
+            <div className="flex border-b border-[var(--border-color)] mb-8 mt-4">
+                <Link href="/admin/products" className="px-6 py-3 uppercase tracking-widest text-sm font-bold border-b-2 border-[var(--text-primary)] text-[var(--text-primary)]">Inventory</Link>
+                <Link href="/admin/orders" className="px-6 py-3 uppercase tracking-widest text-sm font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">Orders</Link>
+            </div>
+
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4">
                 <div>
                     <h1 className="text-3xl md:text-4xl font-display font-bold uppercase tracking-tight text-[var(--text-primary)]">Inventory</h1>
                     <p className="text-[var(--text-muted)] mt-1 font-sans">Manage your store's product catalog.</p>
@@ -114,7 +120,7 @@ export default function Products({ auth, products, stats }) {
                     <button 
                         className="px-6 py-2 border border-[var(--border-color)] text-[var(--text-muted)] hover:text-red-500 hover:border-red-500 transition-colors uppercase tracking-widest text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-primary)]" 
                         onClick={handleClearAll}
-                        disabled={!products || products.length === 0 || processing}
+                        disabled={!productItems || productItems.length === 0 || processing}
                         aria-label="Delete all products"
                     >
                         Purge All
@@ -166,14 +172,14 @@ export default function Products({ auth, products, stats }) {
                         </tr>
                     </thead>
                     <tbody>
-                        {!products || products.length === 0 ? (
+                        {!productItems || productItems.length === 0 ? (
                             <tr>
                                 <td colSpan="6" className="text-center p-8 text-[var(--text-muted)]">
                                     No products found in the database.
                                 </td>
                             </tr>
                         ) : (
-                            products.map(product => (
+                            productItems.map(product => (
                                 <tr key={product.id} className="border-b border-[var(--border-color)] hover:bg-[var(--bg-base)] transition-colors">
                                     <td className="p-4">
                                         <div className="w-12 h-12 bg-[var(--bg-base)] border border-[var(--border-color)] flex items-center justify-center overflow-hidden">
@@ -223,6 +229,26 @@ export default function Products({ auth, products, stats }) {
                     </tbody>
                 </table>
             </main>
+
+            {/* Pagination */}
+            {products.links && (
+                <div className="mt-8 flex justify-center">
+                    <div className="flex flex-wrap gap-1">
+                        {products.links.map((link, key) => (
+                            <Link
+                                key={key}
+                                href={link.url || '#'}
+                                className={`px-4 py-2 border text-sm font-mono transition-colors ${
+                                    link.active 
+                                        ? 'bg-[var(--text-primary)] text-[var(--bg-base)] border-[var(--text-primary)]' 
+                                        : 'bg-transparent text-[var(--text-muted)] border-[var(--border-color)] hover:text-[var(--text-primary)] hover:border-[var(--text-primary)]'
+                                } ${!link.url && 'opacity-50 cursor-not-allowed'}`}
+                                dangerouslySetInnerHTML={{ __html: link.label }}
+                            />
+                        ))}
+                    </div>
+                </div>
+            )}
 
             {/* Custom Accessible Modal */}
             {isModalOpen && (

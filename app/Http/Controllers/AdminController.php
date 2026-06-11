@@ -11,7 +11,7 @@ class AdminController extends Controller
 {
     public function index()
     {
-        $products = Product::orderBy('created_at', 'desc')->get();
+        $products = Product::orderBy('created_at', 'desc')->paginate(15);
         
         $stats = [
             'totalRevenue' => Order::where('status', 'paid')->sum('net_price'),
@@ -20,6 +20,15 @@ class AdminController extends Controller
         ];
 
         return inertia('Admin/Products', compact('products', 'stats'));
+    }
+
+    public function orders()
+    {
+        $orders = Order::with(['user', 'orderItems.product'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(30);
+        
+        return inertia('Admin/Orders', compact('orders'));
     }
 
     public function store(Request $request)

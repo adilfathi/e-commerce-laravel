@@ -15,7 +15,7 @@ class ProductController extends Controller
 
     public function show($category)
     {
-        $products = Product::where('category', $category)->get();
+        $products = Product::where('category', $category)->paginate(15);
         return inertia('ProductListing', compact('products', 'category'));
     }
 
@@ -39,7 +39,7 @@ class ProductController extends Controller
 
     public function newCollections()
     {
-        $products = Product::latest()->take(12)->get();
+        $products = Product::latest()->paginate(15);
         return inertia('ProductListing', [
             'products' => $products,
             'category' => 'New Collections'

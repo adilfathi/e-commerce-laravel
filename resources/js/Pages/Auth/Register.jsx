@@ -24,13 +24,11 @@ export default function Register() {
 
                 <GlassCard className="w-full max-w-lg p-8 md:p-10 border border-[var(--border-color)]">
                     <div className="text-center mb-8">
-                        <div className="inline-flex w-12 h-12 border border-[var(--text-primary)] items-center justify-center mb-4 bg-[var(--bg-secondary)]">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-[var(--text-primary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-                            </svg>
+                        <div className="mb-8 text-center">
+                            <Link href="/" className="text-4xl font-display font-bold tracking-tighter hover:opacity-80 transition-opacity">
+                                ECOMMER<span className="text-[var(--accent-primary)]">ZZ</span>
+                            </Link>
                         </div>
-                        <h2 className="text-3xl font-display font-bold text-[var(--text-primary)]">Create Account</h2>
-                        <p className="text-[var(--text-muted)] mt-2 font-sans">Join ECOMMERZZ for a premium shopping experience.</p>
                     </div>
 
                     <form onSubmit={submit} className="space-y-6">

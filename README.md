@@ -1,8 +1,10 @@
 # 🛍️ Modern E-Commerce Platform
 
-A full-featured, modern e-commerce web application built with Laravel 12 and Tailwind CSS 4. This project demonstrates a complete online shopping experience with product management, shopping cart, user authentication, order processing, and integrated payment gateway.
+A full-featured, modern e-commerce web application built with Laravel 12, React 19, Inertia.js, and Tailwind CSS 4. This project demonstrates a complete online shopping experience with product management, shopping cart, user authentication, order processing, integrated payment gateway, and an admin panel.
 
 ![Laravel](https://img.shields.io/badge/Laravel-12-FF2D20?style=flat-square&logo=laravel)
+![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react)
+![Inertia.js](https://img.shields.io/badge/Inertia.js-3-9553E9?style=flat-square&logo=inertia)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-38B2AC?style=flat-square&logo=tailwind-css)
 ![PHP](https://img.shields.io/badge/PHP-8.2+-777BB4?style=flat-square&logo=php)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Supabase-316192?style=flat-square&logo=postgresql)
@@ -16,6 +18,12 @@ A full-featured, modern e-commerce web application built with Laravel 12 and Tai
 - **Order Management**: Complete order processing with status tracking
 - **Payment Integration**: Seamless payment processing via Midtrans payment gateway
 - **New Collections**: Showcase latest products
+- **Product Reviews**: Users can leave and read reviews on products
+
+### 👑 Admin Features
+- **Admin Dashboard**: Manage products and view orders
+- **Product Management**: Full CRUD operations for products
+- **Role-based Access**: Secured routes exclusively for administrators
 
 ### 👤 User Features
 - **User Authentication**: Secure registration and login system
@@ -35,8 +43,10 @@ A full-featured, modern e-commerce web application built with Laravel 12 and Tai
 - **Payment Expiration**: Automatic order cancellation for unpaid orders (24-hour expiry)
 - **Payment Status Tracking**: Real-time payment status updates via webhooks
 - **Multiple Payment Methods**: Support for various payment options through Midtrans
+- **Payment Simulator Gateway**: Custom payment simulator for local testing without Midtrans
 
 ### 🔧 Technical Features
+- **Inertia.js Integration**: Seamless SPA experience without building an API
 - **RESTful API Design**: Clean, organized route structure
 - **Database Migrations**: Version-controlled database schema
 - **Eloquent ORM**: Efficient database relationships and queries
@@ -47,7 +57,7 @@ A full-featured, modern e-commerce web application built with Laravel 12 and Tai
 ## 🚀 Tech Stack
 
 - **Backend**: Laravel 12 (PHP 8.2+)
-- **Frontend**: Tailwind CSS 4, Blade Templates
+- **Frontend**: React 19, Inertia.js, Tailwind CSS 4, DaisyUI
 - **Database**: PostgreSQL (Supabase)
 - **Payment Gateway**: Midtrans
 - **Build Tool**: Vite
@@ -121,6 +131,17 @@ A full-featured, modern e-commerce web application built with Laravel 12 and Tai
 
    Visit `http://localhost:8000` in your browser.
 
+### 🐳 Running with Docker
+
+Alternatively, you can run the entire stack using Docker Compose. The Docker configuration is set up to automatically read your database credentials directly from the `.env` file, ensuring your sensitive data remains secure.
+
+1. Ensure your `.env` file is configured with your database settings.
+2. Build and start the containers:
+   ```bash
+   docker-compose up -d --build
+   ```
+3. The Laravel application will be available at `http://localhost:8000` and the Vite development server at `http://localhost:5173`.
+
 ## 👤 Default User
 
 For testing purposes, a default user is created:
@@ -140,8 +161,8 @@ e-commerce/
 │   └── seeders/              # Database seeders
 ├── resources/
 │   ├── css/                  # Stylesheets
-│   ├── js/                   # JavaScript files
-│   └── views/                # Blade templates
+│   ├── js/                   # React components and Inertia pages
+│   └── views/                # Initial Blade template (app.blade.php)
 ├── routes/
 │   ├── web.php               # Web routes
 │   └── console.php           # Console routes
@@ -161,6 +182,10 @@ e-commerce/
 | `/login` | User login page |
 | `/register` | User registration page |
 | `/payment/{orderId}` | Payment page (authenticated) |
+| `/product/{id}/review` | Submit a product review (authenticated) |
+| `/admin/products` | Admin product management (admin) |
+| `/admin/orders` | Admin orders overview (admin) |
+| `/simulator/{orderId}` | Custom payment simulator for testing |
 
 ## 🔐 Payment Integration
 

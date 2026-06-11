@@ -3,6 +3,7 @@ import MainLayout from '@/Layouts/MainLayout';
 import GlassButton from '@/Components/GlassButton';
 
 export default function Orders({ auth, orders }) {
+    const orderItems = orders.data || [];
     return (
         <MainLayout user={auth?.user}>
             <Head title="My Orders - E-Commerce" />
@@ -13,7 +14,7 @@ export default function Orders({ auth, orders }) {
                     <p className="text-[var(--text-muted)] mt-2 font-sans text-lg">View your order history and details.</p>
                 </div>
 
-                {!orders || orders.length === 0 ? (
+                {!orderItems || orderItems.length === 0 ? (
                     <div className="text-center py-24 border border-[var(--border-color)] bg-[var(--bg-secondary)]">
                         <div className="mb-6 text-[var(--text-muted)]">
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-24 w-24 mx-auto opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -27,9 +28,10 @@ export default function Orders({ auth, orders }) {
                         </Link>
                     </div>
                 ) : (
-                    <div className="space-y-8">
-                        {orders.map((order) => (
-                            <div key={order.id} className="bg-[var(--bg-secondary)] border border-[var(--border-color)] overflow-hidden">
+                    <div>
+                        <div className="space-y-8">
+                            {orderItems.map((order) => (
+                                <div key={order.id} className="bg-[var(--bg-secondary)] border border-[var(--border-color)] overflow-hidden">
                                 <div className="bg-[var(--bg-base)] border-b border-[var(--border-color)] p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
                                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6 w-full font-mono text-sm">
                                         <div>
@@ -107,7 +109,28 @@ export default function Orders({ auth, orders }) {
                             </div>
                         ))}
                     </div>
-                )}
+
+                    {/* Pagination */}
+                    {orders.links && (
+                        <div className="mt-12 flex justify-center">
+                            <div className="flex flex-wrap gap-1">
+                                {orders.links.map((link, key) => (
+                                    <Link
+                                        key={key}
+                                        href={link.url || '#'}
+                                        className={`px-4 py-2 border text-sm font-mono transition-colors ${
+                                            link.active 
+                                                ? 'bg-[var(--text-primary)] text-[var(--bg-base)] border-[var(--text-primary)]' 
+                                                : 'bg-transparent text-[var(--text-muted)] border-[var(--border-color)] hover:text-[var(--text-primary)] hover:border-[var(--text-primary)]'
+                                        } ${!link.url && 'opacity-50 cursor-not-allowed'}`}
+                                        dangerouslySetInnerHTML={{ __html: link.label }}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            )}
             </div>
         </MainLayout>
     );

@@ -137,9 +137,11 @@ export default function MainLayout({ children }) {
                                         <div className="px-4 py-2 border-b border-[var(--border-color)] mb-2">
                                             <p className="text-sm font-bold text-[var(--text-primary)] truncate">{auth.user.name}</p>
                                         </div>
-                                        <Link href="/admin/products" className="block px-4 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-base)] transition-colors">
-                                            Admin Dashboard
-                                        </Link>
+                                        {auth.user.is_admin && (
+                                            <Link href="/admin/products" className="block px-4 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-base)] transition-colors">
+                                                Admin Dashboard
+                                            </Link>
+                                        )}
                                         <Link href="/orders" className="block md:hidden px-4 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-base)] transition-colors">
                                             My Orders
                                         </Link>

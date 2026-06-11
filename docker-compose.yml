@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  # Laravel Application Server
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ecommerzz-app
+    container_name: ecommerzz-app
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+    ports:
+      - "8000:8000"
+    networks:
+      - ecommerzz-network
+    # Install PHP dependencies and start the development server
+    command: >
+      sh -c "composer install && 
+             php artisan config:cache &&
+             php artisan serve --host=0.0.0.0 --port=8000"
+    environment:
+      - DB_CONNECTION=${DB_CONNECTION}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_DATABASE=${DB_DATABASE}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+
+  # Vite / React Asset Server
+  vite:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ecommerzz-vite
+    container_name: ecommerzz-vite
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+    ports:
+      - "5173:5173"
+    networks:
+      - ecommerzz-network
+    # Install Node dependencies and start Vite with --host to bind to 0.0.0.0
+    command: >
+      sh -c "npm install --legacy-peer-deps && npm run dev -- --host"
+
+networks:
+  ecommerzz-network:
+    driver: bridge
